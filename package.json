@@ -1,0 +1,25 @@
+{
+  "name": "audio-app",
+  "version": "0.1.0",
+  "description": "Awesome audio app",
+  "private": true,
+  "author": {
+    "name": "Peter Vilja",
+    "email": "peter.vilja@gmail.com"
+  },
+  "license": "MIT",
+  "engines": ">=0.10",
+  "dependencies": {
+    "es6-module-loader": "^0.8.0",
+    "traceur": "0.0.55"
+  },
+  "devDependencies": {
+    "connect": "^2.26.4",
+    "connect-livereload": "^0.4.0",
+    "gulp": "^3.8.8",
+    "gulp-autoprefixer": "^1.0.1",
+    "gulp-clean": "^0.2.4",
+    "gulp-livereload": "^2.1.1",
+    "gulp-ruby-sass": "^0.7.1"
+  }
+}
