@@ -1,5 +1,5 @@
 'use strict';
-
+var serveStatic = require('serve-static')
 var gulp = require('gulp');
 var sass = require('gulp-ruby-sass');
 var autoprefixer = require('gulp-autoprefixer');
@@ -44,8 +44,7 @@ gulp.task('clean', function () {
 gulp.task('connect', function () {
   var audioapp = connect()
     .use(require('connect-livereload')({ port: 35729 }))
-    .use(connect.static('.tmp'))
-    .use(connect.static(app));
+    .use(serveStatic('.tmp', app))
 
   require('http').createServer(audioapp)
     .listen(9000)
@@ -56,6 +55,7 @@ gulp.task('connect', function () {
 
 gulp.task('watch', ['connect', 'copy', 'styles', 'html'], function () {
   var server = livereload();
+  server.changed();
 
   gulp.watch([
     app + '/*.html',
