@@ -1,4 +1,16 @@
-var [x,y] = [1,2];
-console.log(x);
-console.log(y);
-console.log('wiii');
+var onMessage = function (event) {
+  console.log(event);
+};
+
+var success = function (access) {
+  var inputs = access.inputs();
+  inputs.forEach((input) => {
+    input.onmidimessage = onMessage;
+  });
+};
+
+var failure = function (message) {
+  console.log(message);
+};
+
+navigator.requestMIDIAccess().then(success, failure);

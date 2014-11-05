@@ -19,7 +19,8 @@ gulp.task('copy', function () {
       'node_modules/traceur/bin/traceur-runtime.js',
       'node_modules/es6-module-loader/dist/es6-module-loader.js'
     ])
-    .pipe(gulp.dest('.tmp/scripts/vendor'));
+    .pipe(gulp.dest('.tmp/scripts/vendor'))
+    .pipe(gulp.dest('dist/scripts/vendor'));
 });
 
 gulp.task('styles', function () {
