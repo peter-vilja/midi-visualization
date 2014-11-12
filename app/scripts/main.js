@@ -3,7 +3,7 @@
   var release = 0.05; // release speed
   var portamento = 0.05; // portamento/glide speed
   var activeNotes = []; // the stack of actively-pressed keys
-  var oscillator, oscillator2, gainNode, context, biquadFilter, distortion, tuna, chorus, interval;
+  var oscillator, oscillator2, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote;
 
   var initialize = () => {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
