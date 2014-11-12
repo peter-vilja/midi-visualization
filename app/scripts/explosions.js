@@ -30,7 +30,7 @@ function midiVisuals() {
 
 function draw(mx, my, h, w, timeScale) {
 	// doVisual('miniworks', 120, 120, 1));
-	var transforms = ["155,155","-155,155","155,-155","-155,-155"];
+	var transforms = ["300,300","-300,300","300,-300","-300,-300"];
 	for (var i = 0; i < transforms.length; i++) {
 		svg.append("svg:circle")
 			.attr("cx",mx).attr("cy",my).attr("r",10)
