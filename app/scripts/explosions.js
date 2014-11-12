@@ -33,11 +33,22 @@ function draw(mx, my, h, w, timeScale) {
 	var transforms = ["300,300","-300,300","300,-300","-300,-300"];
 	for (var i = 0; i < transforms.length; i++) {
 		svg.append("svg:circle")
-			.attr("cx",mx).attr("cy",my).attr("r",10)
-			.style("stroke",colors(++ci)).style("fill",colors(ci)).style("stroke-opacity",0.5)
+			.attr("cx",mx)
+			.attr("cy",my)
+			.attr("r",10)
+			.style("stroke",colors(++ci))
+			.style("fill",colors(ci))
+			.style("stroke-opacity",0.5)
 			.transition()
-				.attr("transform","translate("+transforms[i]+")").duration(timeScale*1000).ease(Math.sqrt).attr("r",25)
-				.style("stroke-opacity",1e-6).style("fill-opacity",1e-6).remove();
+				.attr("transform","translate("+transforms[i]+")")
+				.duration(timeScale*1000)
+				.ease(() => {
+					Math.sqrt / 2;
+				})
+				.attr("r",25)
+				.style("stroke-opacity",1e-6)
+				.style("fill-opacity",1e-6)
+				.remove();
 	}
 }
 
