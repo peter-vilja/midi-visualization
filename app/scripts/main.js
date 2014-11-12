@@ -3,7 +3,7 @@
   var release = 0.05; // release speed
   var portamento = 0.05; // portamento/glide speed
   var activeNotes = []; // the stack of actively-pressed keys
-  var oscillator, gainNode, context, biquadFilter;
+  var oscillator, gainNode, context, biquadFilter, distortion;
 
   var initialize = () => {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -15,16 +15,19 @@
     oscillator = context.createOscillator();
     oscillator.frequency.setValueAtTime(110, 0);
     gainNode = context.createGain();
-
     biquadFilter = context.createBiquadFilter();
+    distortion = context.createWaveShaper();
 
-    oscillator.connect(biquadFilter);
+    oscillator.connect(distortion);
+    distortion.connect(biquadFilter);
     biquadFilter.connect(gainNode);
     gainNode.connect(context.destination);
 
+    distortion.curve = makeDistortionCurve(400);
     biquadFilter.type = biquadFilter.LOWPASS;
-    biquadFilter.frequency.value = 2000;
+    biquadFilter.frequency.value = 100;
     gainNode.gain.value = 0.0;  // Mute the sound
+    oscillator.type = 'sine';
     oscillator.start(0);  // Go ahead and start up the oscillator
   };
 
@@ -52,7 +55,6 @@
         noteOff(event.data[1]);
         return;
       case 0xB0:
-        console.log(event.data[1], event.data[2]);
         filter(event.data[1], event.data[2]);
         return;
     }
@@ -82,7 +84,27 @@
   }
 
   var filter = (potikka, value) => {
-    context.createBiquadFilter();
+    if (potikka === 4) {
+      var curve = makeDistortionCurve(value * 2 + 50);
+      distortion.curve = curve;
+    } else {
+      biquadFilter.frequency.value = value * 100 + 100;
+    }
+  };
+
+  var makeDistortionCurve = amount => {
+    var k = typeof amount === 'number' ? amount : 50;
+    var n_samples = 44100;
+    var curve = new Float32Array(n_samples);
+    var deg = Math.PI / 180;
+    var i = 0;
+    var x;
+
+    for ( ; i < n_samples; ++i ) {
+      x = i * 2 / n_samples - 1;
+      curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+    }
+    return curve;
   };
 
   var frequencyFromNoteNumber = note => 440 * Math.pow(2,(note-69)/12);
