@@ -54,7 +54,7 @@
     oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber), 0, portamento);
     envelope.gain.cancelScheduledValues(0);
     envelope.gain.setTargetAtTime(1.0, 0, attack);
-    draw(400, 320, window.innerWidth, window.innerHeight, 1);
+    draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), 320, window.innerWidth, window.innerHeight, 100);
   };
 
   var noteOff = (noteNumber) => {
