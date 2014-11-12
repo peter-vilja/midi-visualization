@@ -42,9 +42,7 @@ function draw(mx, my, h, w, timeScale) {
 			.transition()
 				.attr("transform","translate("+transforms[i]+")")
 				.duration(timeScale*1000)
-				.ease(() => {
-					Math.sqrt / 2;
-				})
+				.ease(Math.sqrt)
 				.attr("r",25)
 				.style("stroke-opacity",1e-6)
 				.style("fill-opacity",1e-6)
