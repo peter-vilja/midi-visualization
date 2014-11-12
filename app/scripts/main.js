@@ -3,7 +3,7 @@
   var release = 0.05; // release speed
   var portamento = 0.05; // portamento/glide speed
   var activeNotes = []; // the stack of actively-pressed keys
-  var oscillator, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote;
+  var oscillator, oscillator2, gainNode, context, biquadFilter, distortion, tuna, chorus, interval;
 
   var initialize = () => {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -14,7 +14,9 @@
 
     // set up the basic oscillator chain, muted to begin with.
     oscillator = context.createOscillator();
+    oscillator2 = context.createOscillator();
     oscillator.frequency.setValueAtTime(110, 0);
+    oscillator2.frequency.setValueAtTime(55, 0);
     gainNode = context.createGain();
     biquadFilter = context.createBiquadFilter();
     distortion = context.createWaveShaper();
@@ -26,6 +28,7 @@
              });
 
     oscillator.connect(distortion);
+    oscillator2.connect(distortion);
     distortion.connect(biquadFilter);
     biquadFilter.connect(chorus.input);
     chorus.connect(gainNode);
@@ -35,8 +38,9 @@
     biquadFilter.type = biquadFilter.LOWPASS;
     biquadFilter.frequency.value = 100;
     gainNode.gain.value = 0.0;  // Mute the sound
-    oscillator.type = 'sine';
+    oscillator.type = oscillator.SINE;
     oscillator.start(0);  // Go ahead and start up the oscillator
+    oscillator2.start(0);  // Go ahead and start up the oscillator
   };
 
   var success = access => {
@@ -74,6 +78,8 @@
     activeNotes.push(noteNumber);
     oscillator.frequency.cancelScheduledValues(0);
     oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber), 0, portamento);
+    oscillator2.frequency.cancelScheduledValues(0);
+    oscillator2.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber)/2, 0, portamento);
     gainNode.gain.cancelScheduledValues(0);
     gainNode.gain.setTargetAtTime(1.0, 0, attack);
 
@@ -97,6 +103,8 @@
     } else {
       oscillator.frequency.cancelScheduledValues(0);
       oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length-1]), 0, portamento);
+      oscillator2.frequency.cancelScheduledValues(0);
+      oscillator2.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length-1])/2, 0, portamento);
     }
   }
 
