@@ -3,7 +3,7 @@
   var release = 0.05; // release speed
   var portamento = 0.05; // portamento/glide speed
   var activeNotes = []; // the stack of actively-pressed keys
-  var oscillator, gainNode, context, biquadFilter, distortion, tuna, chorus, interval;
+  var oscillator, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote;
 
   var initialize = () => {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -79,14 +79,14 @@
 
     if (interval) clearInterval(interval);
     drawCircle(noteNumber);
+    currentNote = noteNumber;
     interval = setInterval(() => {
       drawCircle(noteNumber);
     }, 100);
   };
 
   var noteOff = noteNumber => {
-    clearInterval(interval);
-    interval = null;
+    if (noteNumber === currentNote) clearInterval(interval), interval = null;
     let position = activeNotes.indexOf(noteNumber);
     if (position != -1) {
       activeNotes.splice(position, 1);
