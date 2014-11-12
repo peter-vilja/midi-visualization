@@ -1,6 +1,6 @@
 var svg = d3.select("#svgContainer").append("svg:svg").style("pointer-events", "all");
 var colors = d3.scale.category20b();
-var ci=0;
+var color = 0;
 var debug = true;
 function log(msg) {if (debug) {console.log(msg);}}
 
@@ -36,8 +36,8 @@ function draw(mx, my, h, w, timeScale) {
 			.attr("cx",mx)
 			.attr("cy",my)
 			.attr("r",10)
-			.style("stroke",colors(++ci))
-			.style("fill",colors(ci))
+			.style("stroke",colors(++color))
+			.style("fill",colors(color))
 			.style("stroke-opacity",0.5)
 			.transition()
 				.attr("transform","translate("+transforms[i]+")")
