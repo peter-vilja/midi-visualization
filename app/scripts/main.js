@@ -3,12 +3,13 @@
   var release = 0.05; // release speed
   var portamento = 0.05; // portamento/glide speed
   var activeNotes = []; // the stack of actively-pressed keys
-  var oscillator, gainNode, context, biquadFilter, distortion;
+  var oscillator, gainNode, context, biquadFilter, distortion, tuna, chorus;
 
   var initialize = () => {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
     context = new AudioContext();
+    tuna = new Tuna(context);
     navigator.requestMIDIAccess().then(success, failure);
 
     // set up the basic oscillator chain, muted to begin with.
@@ -17,10 +18,17 @@
     gainNode = context.createGain();
     biquadFilter = context.createBiquadFilter();
     distortion = context.createWaveShaper();
+    chorus = new tuna.Chorus({
+                 rate: 2,         //0.01 to 8+
+                 feedback: 0.2,     //0 to 1+
+                 delay: 0.0045,     //0 to 1
+                 bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
+             });
 
     oscillator.connect(distortion);
     distortion.connect(biquadFilter);
-    biquadFilter.connect(gainNode);
+    biquadFilter.connect(chorus.input);
+    chorus.connect(gainNode);
     gainNode.connect(context.destination);
 
     distortion.curve = makeDistortionCurve(400);
@@ -85,7 +93,7 @@
 
   var filter = (potikka, value) => {
     if (potikka === 4) {
-      var curve = makeDistortionCurve(value * 2 + 50);
+      var curve = makeDistortionCurve(value * 3 + 50);
       distortion.curve = curve;
     } else {
       biquadFilter.frequency.value = value * 100 + 100;
