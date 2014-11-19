@@ -75,6 +75,7 @@
   var drawCircle = (noteNumber) => draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), 320, window.innerWidth, window.innerHeight, 10);
 
   var noteOn = noteNumber => {
+    console.log('note', noteNumber);
     activeNotes.push(noteNumber);
     oscillator.frequency.cancelScheduledValues(0);
     oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber), 0, portamento);
@@ -109,11 +110,13 @@
   }
 
   var filter = (potikka, value) => {
+    console.log('potikka', potikka, 'value', value);
     if (potikka === 4) {
       var curve = makeDistortionCurve(value * 3 + 50);
       distortion.curve = curve;
     } else {
       biquadFilter.frequency.value = value * 100 + 100;
+
     }
   };
 
