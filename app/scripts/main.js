@@ -10,7 +10,7 @@
 
     context = new AudioContext();
     tuna = new Tuna(context);
-    navigator.requestMIDIAccess().then(success, failure);
+    navigator && navigator.requestMIDIAccess && navigator.requestMIDIAccess().then(success, failure);
 
     // set up the basic oscillator chain, muted to begin with.
     oscillator = context.createOscillator();
