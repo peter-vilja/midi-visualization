@@ -44,10 +44,12 @@
   };
 
   var success = access => {
-    access.inputs().forEach(input => {
-      input.onmidimessage = onMessage;
-      console.log(input); // magic??
-    });
+    var input = access.inputs.values().next().value;
+    input.onmidimessage = onMessage;
+    // access.inputs.values().forEach(input => {
+    //   input.onmidimessage = onMessage;
+    //   console.log(input); // magic??
+    // });
   };
 
   var failure = message => {
