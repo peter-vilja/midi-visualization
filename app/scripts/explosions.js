@@ -101,14 +101,13 @@ function draw(mx, my, h, w, timeScale, color) {
 	}
 }
 
-function drawFilter(block, scale, timeScale) {
+function drawFilter(block, scale) {
 	var blocks = [];
 	var transforms = ["0,300","0,-300"];
 	for (var i = 0; i < transforms.length; i++) {
 		// console.log(d3.select('#block1'));
 		d3.select('#block'+ block)
 			.transition()
-				.duration(timeScale*50)
 				.ease(Math.sqrt)
 				.style("stroke", 'white')
 				.style("fill", 'white')
