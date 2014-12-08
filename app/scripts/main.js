@@ -4,7 +4,7 @@
   var portamento = 0.05; // portamento/glide speed
   var activeNotes = []; // the stack of actively-pressed keys
   var color = 0;
-  var oscillator, oscillator2, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote;
+  var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator;
 
   var initialize = () => {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -16,8 +16,11 @@
     // set up the basic oscillator chain, muted to begin with.
     oscillator = context.createOscillator();
     oscillator2 = context.createOscillator();
+    oscillator3 = context.createOscillator();
     oscillator.frequency.setValueAtTime(110, 0);
     oscillator2.frequency.setValueAtTime(55, 0);
+    modulator = 0;
+    oscillator3.frequency.setValueAtTime(modulator, 0);
     gainNode = context.createGain();
     biquadFilter = context.createBiquadFilter();
     distortion = context.createWaveShaper();
@@ -30,9 +33,11 @@
 
     oscillator.connect(distortion);
     oscillator2.connect(distortion);
+    oscillator3.connect(distortion);
     distortion.connect(biquadFilter);
-    biquadFilter.connect(chorus.input);
-    chorus.connect(gainNode);
+    biquadFilter.connect(gainNode);
+    // biquadFilter.connect(chorus.input);
+    // chorus.connect(gainNode);
     gainNode.connect(context.destination);
 
     distortion.curve = makeDistortionCurve(400);
@@ -42,6 +47,8 @@
     oscillator.type = oscillator.SINE;
     oscillator.start(0);  // Go ahead and start up the oscillator
     oscillator2.start(0);  // Go ahead and start up the oscillator
+    oscillator3.start(0);
+
   };
 
   var success = access => {
@@ -83,6 +90,8 @@
     oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber), 0, portamento);
     oscillator2.frequency.cancelScheduledValues(0);
     oscillator2.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber)/2, 0, portamento);
+    oscillator3.frequency.cancelScheduledValues(0); // not sure if needed
+    oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
     gainNode.gain.cancelScheduledValues(0);
     gainNode.gain.setTargetAtTime(1.0, 0, attack);
     color++;
@@ -109,6 +118,8 @@
       oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length-1]), 0, portamento);
       oscillator2.frequency.cancelScheduledValues(0);
       oscillator2.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length-1])/2, 0, portamento);
+      oscillator3.frequency.cancelScheduledValues(0);
+      oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
     }
   }
 
@@ -117,8 +128,10 @@
     if (potikka === 4) {
       var curve = makeDistortionCurve(value * 3 + 50);
       distortion.curve = curve;
-    } if (potikka === 7) {
-
+    } else if (potikka === 7) {
+      modulator = value // changing the carrier frequency
+      oscillator3.frequency.cancelScheduledValues(0);
+      oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
     } else {
       biquadFilter.frequency.value = value * 100 + 100;
 
