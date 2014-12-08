@@ -1,10 +1,9 @@
-
 var attack = 0.05; // attack speed
 var release = 0.05; // release speed
 var portamento = 0.05; // portamento/glide speed
 var activeNotes = []; // the stack of actively-pressed keys
 var color = 0;
-var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator;
+var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, moog;
 
 var initialize = () => {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -13,37 +12,37 @@ var initialize = () => {
   tuna = new Tuna(context);
   navigator && navigator.requestMIDIAccess && navigator.requestMIDIAccess().then(success, failure);
 
-  // set up the basic oscillator chain, muted to begin with.
+// set up the basic oscillator chain, muted to begin with.
   oscillator = context.createOscillator();
   oscillator2 = context.createOscillator();
-  oscillator3 = context.createOscillator();
-  oscillator.frequency.setValueAtTime(110, 0);
-  oscillator2.frequency.setValueAtTime(55, 0);
-  modulator = 0;
-  oscillator3.frequency.setValueAtTime(modulator, 0);
-  gainNode = context.createGain();
-  biquadFilter = context.createBiquadFilter();
-  distortion = context.createWaveShaper();
-  chorus = new tuna.Chorus({
-               rate: 2,         //0.01 to 8+
-               feedback: 0.2,     //0 to 1+
-               delay: 0.0045,     //0 to 1
-               bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
-           });
+	oscillator3 = context.createOscillator();
+	oscillator.frequency.setValueAtTime(110, 0);
+	oscillator2.frequency.setValueAtTime(55, 0);
+	modulator = 0;
+	volume = 0.0;
+	oscillator3.frequency.setValueAtTime(modulator, 0);
+	gainNode = context.createGain();
+	biquadFilter = context.createBiquadFilter();
+	distortion = context.createWaveShaper();
+	chorus = new tuna.Chorus({
+	             rate: 0.01,         //0.01 to 8+
+	             feedback: 0.0,     //0 to 1+
+	             delay: 0.0045,      //0 to 1
+	             bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
+	         });
 
   oscillator.connect(distortion);
   oscillator2.connect(distortion);
   oscillator3.connect(distortion);
   distortion.connect(biquadFilter);
-  biquadFilter.connect(gainNode);
-  // biquadFilter.connect(chorus.input);
-  // chorus.connect(gainNode);
+  biquadFilter.connect(chorus.input);
+  chorus.connect(gainNode);
   gainNode.connect(context.destination);
 
   distortion.curve = makeDistortionCurve(400);
   biquadFilter.type = biquadFilter.LOWPASS;
   biquadFilter.frequency.value = 500;
-  gainNode.gain.value = 0.0;  // Mute the sound
+  gainNode.gain.value = volume;  // Mute the sound
   oscillator.type = oscillator.SINE;
   oscillator.start(0);  // Go ahead and start up the oscillator
   oscillator2.start(0);  // Go ahead and start up the oscillator
@@ -98,7 +97,7 @@ var noteOn = noteNumber => {
   oscillator3.frequency.cancelScheduledValues(0); // not sure if needed
   oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
   gainNode.gain.cancelScheduledValues(0);
-  gainNode.gain.setTargetAtTime(1.0, 0, attack);
+  gainNode.gain.setTargetAtTime(volume, 0, attack);
   color++;
   drawFilter(1, color, 10);
   drawFilter(2, color, 10);
@@ -138,7 +137,17 @@ var noteOff = noteNumber => {
 
 var filter = (potikka, value) => {
   console.log('potikka', potikka, 'value', value);
-  if (potikka === 4) {
+	if (potikka === 1) {
+    volume = value / 127.0;
+    if (activeNotes.length > 0) {
+    	gainNode.gain.cancelScheduledValues(0);
+     	gainNode.gain.setTargetAtTime(volume, 0, portamento);
+     }
+  } else if (potikka === 2) {
+    chorus.rate = value / 16 + 0.01
+  } else if (potikka === 3) {
+    
+  } else if (potikka === 4) {
     var curve = makeDistortionCurve(value * 3 + 50);
     distortion.curve = curve;
   } else if (potikka === 7) {
@@ -148,6 +157,7 @@ var filter = (potikka, value) => {
   } else {
     biquadFilter.frequency.value = value * 100 + 100;
   }
+
 };
 
 var makeDistortionCurve = amount => {
