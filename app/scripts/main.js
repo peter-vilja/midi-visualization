@@ -3,7 +3,7 @@ var release = 0.05; // release speed
 var portamento = 0.05; // portamento/glide speed
 var activeNotes = []; // the stack of actively-pressed keys
 var color = 0;
-var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume;
+var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, wahwah;
 
 var initialize = () => {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -34,12 +34,24 @@ var initialize = () => {
 	             bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
 	         });
 
+	wahwah = new tuna.WahWah({
+                 automode: true,                //true/false
+                 baseFrequency: 0.5,            //0 to 1
+                 excursionOctaves: 2,           //1 to 6
+                 sweep: 0.8,                    //0 to 1
+                 resonance: 10,                 //1 to 100
+                 sensitivity: 0.5,              //-1 to 1
+                 bypass: 1
+             });
+
   oscillator.connect(distortion);
   oscillator2.connect(distortion);
   oscillator3.connect(distortion);
   distortion.connect(biquadFilter);
   biquadFilter.connect(chorus.input);
-  chorus.connect(gainNode);
+  chorus.connect(wahwah.input);
+  //chorus.connect(gainNode);
+  wahwah.connect(gainNode);
   gainNode.connect(context.destination);
 
   distortion.curve = makeDistortionCurve(400);
@@ -143,10 +155,20 @@ var filter = (potikka, value) => {
     //  	gainNode.gain.setTargetAtTime(volume, 0, portamento);
     //  }
   } else if (potikka === 2) {
-    chorus.rate = value / 16 + 0.01
+    chorus.rate = value / 16 + 0.01;
   } else if (potikka === 3) {
-    
+    if (value === 0) {
+    	wahwah.bypass = 1;
+    } else {
+    	wahwah.bypass = 0;
+    }
   } else if (potikka === 4) {
+    var curve = makeDistortionCurve(value * 3 + 50);
+    distortion.curve = curve;
+  } else if (potikka === 5) {
+    var curve = makeDistortionCurve(value * 3 + 50);
+    distortion.curve = curve;
+  } else if (potikka === 6) {
     var curve = makeDistortionCurve(value * 3 + 50);
     distortion.curve = curve;
   } else if (potikka === 7) {
