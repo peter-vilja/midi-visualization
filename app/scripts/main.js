@@ -36,7 +36,7 @@
 
     distortion.curve = makeDistortionCurve(400);
     biquadFilter.type = biquadFilter.LOWPASS;
-    biquadFilter.frequency.value = 100;
+    biquadFilter.frequency.value = 500;
     gainNode.gain.value = 0.0;  // Mute the sound
     oscillator.type = oscillator.SINE;
     oscillator.start(0);  // Go ahead and start up the oscillator
@@ -44,11 +44,9 @@
   };
 
   var success = access => {
-    var inputs = access.inputs.values();
-    for (input of inputs) {
-      input.onmidimessage = onMessage;
-    }
-    console.log('magic');
+    var input = access.inputs.values().next().value;
+    input.onmidimessage = onMessage;
+    console.log(input); // magic??
   };
 
   var failure = message => {
@@ -115,6 +113,8 @@
     if (potikka === 4) {
       var curve = makeDistortionCurve(value * 3 + 50);
       distortion.curve = curve;
+    } if (potikka === 7) {
+
     } else {
       biquadFilter.frequency.value = value * 100 + 100;
 
