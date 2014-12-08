@@ -3,7 +3,7 @@ var release = 0.05; // release speed
 var portamento = 0.05; // portamento/glide speed
 var activeNotes = []; // the stack of actively-pressed keys
 var color = 0;
-var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, moog;
+var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume;
 
 var initialize = () => {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -42,7 +42,8 @@ var initialize = () => {
   distortion.curve = makeDistortionCurve(400);
   biquadFilter.type = biquadFilter.LOWPASS;
   biquadFilter.frequency.value = 500;
-  gainNode.gain.value = volume;  // Mute the sound
+  // gainNode.gain.value = volume;  // Set back when using Akai MPK Mini
+  gainNode.gain.value = 0.0;  // Mute the sound
   oscillator.type = oscillator.SINE;
   oscillator.start(0);  // Go ahead and start up the oscillator
   oscillator2.start(0);  // Go ahead and start up the oscillator
@@ -97,7 +98,8 @@ var noteOn = noteNumber => {
   oscillator3.frequency.cancelScheduledValues(0); // not sure if needed
   oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
   gainNode.gain.cancelScheduledValues(0);
-  gainNode.gain.setTargetAtTime(volume, 0, attack);
+  // gainNode.gain.setTargetAtTime(volume, 0, attack); // set back when using Akai MPK 
+  gainNode.gain.setTargetAtTime(1.0, 0, attack); // set back when using Akai MPK 
   color++;
 
   if (interval) clearInterval(interval);
@@ -133,10 +135,10 @@ var filter = (potikka, value) => {
   drawFilter(potikka, value / 127.0, 10);
 	if (potikka === 1) {
     volume = value / 127.0;
-    if (activeNotes.length > 0) {
-    	gainNode.gain.cancelScheduledValues(0);
-     	gainNode.gain.setTargetAtTime(volume, 0, portamento);
-     }
+    // if (activeNotes.length > 0) { // Set back when using Akai MPK
+    // 	gainNode.gain.cancelScheduledValues(0);
+    //  	gainNode.gain.setTargetAtTime(volume, 0, portamento);
+    //  }
   } else if (potikka === 2) {
     chorus.rate = value / 16 + 0.01
   } else if (potikka === 3) {
