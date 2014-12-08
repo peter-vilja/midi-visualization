@@ -100,6 +100,14 @@ var noteOn = noteNumber => {
   gainNode.gain.cancelScheduledValues(0);
   gainNode.gain.setTargetAtTime(1.0, 0, attack);
   color++;
+  drawFilter(1, color, 10);
+  drawFilter(2, color, 10);
+  drawFilter(3, color, 10);
+  drawFilter(4, color, 10);
+  drawFilter(5, color, 10);
+  drawFilter(6, color, 10);
+  drawFilter(7, color, 10);
+  drawFilter(8, color, 10);
   if (interval) clearInterval(interval);
   drawCircle(noteNumber);
   currentNote = noteNumber;
