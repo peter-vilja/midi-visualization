@@ -1,5 +1,3 @@
-
-
 var socket = io('http://10.23.7.25:3000');
 var connect = document.getElementById('connect');
 var clients = {};
