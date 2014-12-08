@@ -2,62 +2,76 @@ var svg = d3.select("#svgContainer").append("svg:svg").style("pointer-events", "
 var colors = d3.scale.category20b();
 // var color = 0;
 
+function drawInit(width, height) {
+	var elementWidth = width / 5;
+	var gap = (width / 5) / 5;
+	var elementHeight = height / 2 - 50;
+	// console.log('width: ' + width);
+	// console.log('elementWidth: ' + elementWidth);
+	// console.log('gap: ' + gap);
 
-svg.append("svg:rect")
-	.attr("id", 'block1')
-	.attr("x", 100)
-	.attr("y", 0)
-	.attr("width", 200)
-	.attr("height", 400);
+	svg.append("svg:rect")
+		.attr("id", 'block1')
+		.attr("x", gap)
+		.attr("y", 0)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
 
-svg.append("svg:rect")
-	.attr("id", 'block2')
-	.attr("x", 350)
-	.attr("y", 0)
-	.attr("width", 200)
-	.attr("height", 400);
+	svg.append("svg:rect")
+		.attr("id", 'block5')
+		.attr("x", gap)
+		.attr("y", elementHeight + 100)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
 
-svg.append("svg:rect")
-	.attr("id", 'block3')
-	.attr("x", 600)
-	.attr("y", 0)
-	.attr("width", 200)
-	.attr("height", 400);
 
-svg.append("svg:rect")
-	.attr("id", 'block4')
-	.attr("x", 850)
-	.attr("y", 0)
-	.attr("width", 200)
-	.attr("height", 400);
 
-svg.append("svg:rect")
-	.attr("id", 'block5')
-	.attr("x", 100)
-	.attr("y", 500)
-	.attr("width", 200)
-	.attr("height", 400);
+	svg.append("svg:rect")
+		.attr("id", 'block2')
+		.attr("x", (2 * gap) + elementWidth)
+		.attr("y", 0)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
 
-svg.append("svg:rect")
-	.attr("id", 'block6')
-	.attr("x", 350)
-	.attr("y", 500)
-	.attr("width", 200)
-	.attr("height", 400);
+	svg.append("svg:rect")
+		.attr("id", 'block6')
+		.attr("x", (2 * gap) + elementWidth)
+		.attr("y", elementHeight + 100)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
 
-svg.append("svg:rect")
-	.attr("id", 'block7')
-	.attr("x", 600)
-	.attr("y", 500)
-	.attr("width", 200)
-	.attr("height", 400);
 
-svg.append("svg:rect")
-	.attr("id", 'block8')
-	.attr("x", 850)
-	.attr("y", 500)
-	.attr("width", 200)
-	.attr("height", 400);
+
+	svg.append("svg:rect")
+		.attr("id", 'block3')
+		.attr("x", (3 * gap) + (2 * elementWidth))
+		.attr("y", 0)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
+
+	svg.append("svg:rect")
+		.attr("id", 'block7')
+		.attr("x", (3 * gap) + (2 * elementWidth))
+		.attr("y", elementHeight + 100)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
+
+	svg.append("svg:rect")
+		.attr("id", 'block4')
+		.attr("x", (4 * gap) + (3 * elementWidth))
+		.attr("y", 0)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
+
+
+	svg.append("svg:rect")
+		.attr("id", 'block8')
+		.attr("x", (4 * gap) + (3 * elementWidth))
+		.attr("y", elementHeight + 100)
+		.attr("width", elementWidth)
+		.attr("height", elementHeight);
+}
+
 
 function draw(mx, my, h, w, timeScale, color) {
 	// doVisual('miniworks', 120, 120, 1));

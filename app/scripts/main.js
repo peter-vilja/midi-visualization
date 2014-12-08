@@ -8,6 +8,9 @@ var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, disto
 var initialize = () => {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
+  drawInit(window.innerWidth, window.innerHeight);
+
+
   context = new AudioContext();
   tuna = new Tuna(context);
   navigator && navigator.requestMIDIAccess && navigator.requestMIDIAccess().then(success, failure);
@@ -86,7 +89,7 @@ var onMessage = message => {
   translateMessage(message.data);
 };
 
-var drawCircle = (noteNumber) => draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), 320, window.innerWidth, window.innerHeight, 10, color);
+var drawCircle = (noteNumber) => draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), window.innerHeight / 2, window.innerWidth, window.innerHeight, 10, color);
 
 var noteOn = noteNumber => {
   console.log('note', noteNumber);
@@ -132,7 +135,7 @@ var noteOff = noteNumber => {
 
 var filter = (potikka, value) => {
   console.log('potikka', potikka, 'value', value);
-  drawFilter(potikka, value / 127.0, 10);
+  drawFilter(potikka, value / 127.0);
 	if (potikka === 1) {
     volume = value / 127.0;
     // if (activeNotes.length > 0) { // Set back when using Akai MPK
