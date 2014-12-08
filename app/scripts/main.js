@@ -99,14 +99,14 @@ var noteOn = noteNumber => {
   gainNode.gain.cancelScheduledValues(0);
   gainNode.gain.setTargetAtTime(volume, 0, attack);
   color++;
-  drawFilter(1, color, 10);
-  drawFilter(2, color, 10);
-  drawFilter(3, color, 10);
-  drawFilter(4, color, 10);
-  drawFilter(5, color, 10);
-  drawFilter(6, color, 10);
-  drawFilter(7, color, 10);
-  drawFilter(8, color, 10);
+  // drawFilter(1, 0.1, 10);
+  // drawFilter(2, 0.2, 10);
+  // drawFilter(3, 0.3, 10);
+  // drawFilter(4, 0.4, 10);
+  // drawFilter(5, 0.5, 10);
+  // drawFilter(6, 0.6, 10);
+  // drawFilter(7, 0.7, 10);
+  // drawFilter(8, 0.8, 10);
   if (interval) clearInterval(interval);
   drawCircle(noteNumber);
   currentNote = noteNumber;
@@ -137,6 +137,7 @@ var noteOff = noteNumber => {
 
 var filter = (potikka, value) => {
   console.log('potikka', potikka, 'value', value);
+  drawFilter(potikka, value / 127.0, 10);
 	if (potikka === 1) {
     volume = value / 127.0;
     if (activeNotes.length > 0) {

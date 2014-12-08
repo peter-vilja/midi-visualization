@@ -101,27 +101,20 @@ function draw(mx, my, h, w, timeScale, color) {
 	}
 }
 
-function drawFilter(block, color, timeScale) {
+function drawFilter(block, scale, timeScale) {
 	var blocks = [];
 	var transforms = ["0,300","0,-300"];
 	for (var i = 0; i < transforms.length; i++) {
 		// console.log(d3.select('#block1'));
 		d3.select('#block'+ block)
-			
 			.transition()
-				.duration(timeScale*500)
+				.duration(timeScale*50)
 				.ease(Math.sqrt)
-				.style("stroke",colors(color))
-				.style("fill",colors(color))
-				.style("stroke-opacity",0.5)
-				.style("opacity",0.5)
-			.transition()
-				.duration(timeScale*500)
-				.ease(Math.sqrt)
-				.style("stroke",'black')
-				.style("fill",'black')
-				.style("stroke-opacity",0.5)
-				.style("opacity",0.5);
+				.style("stroke", 'white')
+				.style("fill", 'white')
+				.style("stroke-opacity",scale)
+				.style("opacity",scale);
+
 
 				// .attr("r",25)
 				// .style("stroke-opacity",1e-6)
