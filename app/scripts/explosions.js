@@ -56,6 +56,8 @@ function drawInit(width, height) {
 		.attr("width", elementWidth)
 		.attr("height", elementHeight);
 
+
+
 	svg.append("svg:rect")
 		.attr("id", 'block4')
 		.attr("x", (4 * gap) + (3 * elementWidth))
@@ -116,17 +118,16 @@ function draw(mx, my, h, w, timeScale, color) {
 }
 
 function drawFilter(block, scale) {
-	var blocks = [];
-	var transforms = ["0,300","0,-300"];
-	for (var i = 0; i < transforms.length; i++) {
-		// console.log(d3.select('#block1'));
-		d3.select('#block'+ block)
-			.transition()
-				.ease(Math.sqrt)
-				.style("stroke", 'white')
-				.style("fill", 'white')
-				.style("stroke-opacity",scale)
-				.style("opacity",scale);
+
+	
+	// console.log(d3.select('#block1'));
+	d3.select('#block'+ block)
+		.transition()
+			.ease(Math.sqrt)
+			.style("stroke", colors(20 / 5 * block))
+			.style("fill", colors(20 / 10 * block))
+			.style("stroke-opacity",scale)
+			.style("opacity",scale);
 
 
 				// .attr("r",25)
@@ -192,5 +193,4 @@ function drawFilter(block, scale) {
 		// 		.style("stroke-opacity",1e-15)
 		// 		.style("fill-opacity",1e-6)
 		// 		.remove();
-	}
 }
