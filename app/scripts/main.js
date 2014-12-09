@@ -3,7 +3,7 @@ var release = 0.05; // release speed
 var portamento = 0.05; // portamento/glide speed
 var activeNotes = []; // the stack of actively-pressed keys
 var color = 0;
-var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, wahwah;
+var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, wahwah, preamp, delay, feedback; 
 
 var initialize = () => {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -21,6 +21,12 @@ var initialize = () => {
 	oscillator3 = context.createOscillator();
 	oscillator.frequency.setValueAtTime(110, 0);
 	oscillator2.frequency.setValueAtTime(55, 0);
+	preamp = context.createGain();
+	preamp.gain.value = 1.0;
+	delay = context.createDelay();
+	feedback = context.createGain();
+	delay.delayTime.value = 0.0;
+	feedback.gain.value = 0.0;
 	modulator = 0;
 	volume = 0.0;
 	oscillator3.frequency.setValueAtTime(modulator, 0);
@@ -44,20 +50,25 @@ var initialize = () => {
                  bypass: 1
              });
 
-  oscillator.connect(distortion);
-  oscillator2.connect(distortion);
-  oscillator3.connect(distortion);
+  oscillator.connect(preamp);
+  oscillator2.connect(preamp);
+  oscillator3.connect(preamp);
+  preamp.connect(distortion);
+  // wahwah.connect(distortion); // wah wah is not in use currently
   distortion.connect(biquadFilter);
   biquadFilter.connect(chorus.input);
-  chorus.connect(wahwah.input);
-  //chorus.connect(gainNode);
-  wahwah.connect(gainNode);
+  chorus.connect(delay);
+  chorus.connect(gainNode); // dry sound without delay
+  
+  delay.connect(feedback); // feedback loop
+  feedback.connect(delay);
+
+  delay.connect(gainNode);
   gainNode.connect(context.destination);
 
   distortion.curve = makeDistortionCurve(400);
   biquadFilter.type = biquadFilter.LOWPASS;
   biquadFilter.frequency.value = 500;
-  // gainNode.gain.value = volume;  // Set back when using Akai MPK Mini
   gainNode.gain.value = 0.0;  // Mute the sound
   oscillator.type = oscillator.SINE;
   oscillator.start(0);  // Go ahead and start up the oscillator
@@ -113,8 +124,7 @@ var noteOn = noteNumber => {
   oscillator3.frequency.cancelScheduledValues(0); // not sure if needed
   oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
   gainNode.gain.cancelScheduledValues(0);
-  // gainNode.gain.setTargetAtTime(volume, 0, attack); // set back when using Akai MPK 
-  gainNode.gain.setTargetAtTime(1.0, 0, attack); // set back when using Akai MPK 
+  gainNode.gain.setTargetAtTime(1.0, 0, attack);
   color++;
 
   if (interval) clearInterval(interval);
@@ -149,11 +159,11 @@ var filter = (potikka, value) => {
   console.log('potikka', potikka, 'value', value);
   drawFilter(potikka, value / 127.0);
 	if (potikka === 1) {
-    volume = value / 127.0;
-    // if (activeNotes.length > 0) { // Set back when using Akai MPK
-    // 	gainNode.gain.cancelScheduledValues(0);
-    //  	gainNode.gain.setTargetAtTime(volume, 0, portamento);
-    //  }
+    var prevolume = value / 127.0;
+    if (activeNotes.length > 0) { 
+    	preamp.gain.cancelScheduledValues(0);
+      preamp.gain.setTargetAtTime(prevolume, 0, portamento);
+      }
   } else if (potikka === 2) {
     chorus.rate = value / 16 + 0.01;
   } else if (potikka === 3) {
@@ -166,11 +176,13 @@ var filter = (potikka, value) => {
     var curve = makeDistortionCurve(value * 3 + 50);
     distortion.curve = curve;
   } else if (potikka === 5) {
-    var curve = makeDistortionCurve(value * 3 + 50);
-    distortion.curve = curve;
+    var delaytime = value / 64;
+    delay.delayTime.cancelScheduledValues(0);
+    delay.delayTime.setTargetAtTime(delaytime, 0, portamento);
   } else if (potikka === 6) {
-    var curve = makeDistortionCurve(value * 3 + 50);
-    distortion.curve = curve;
+    var feedbackAmount = value / 130;
+    feedback.gain.cancelScheduledValues(0);
+    feedback.gain.setTargetAtTime(feedbackAmount, 0, portamento);
   } else if (potikka === 7) {
     modulator = value // changing the carrier frequency
     oscillator3.frequency.cancelScheduledValues(0);
