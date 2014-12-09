@@ -3,7 +3,8 @@ var release = 0.05; // release speed
 var portamento = 0.05; // portamento/glide speed
 var activeNotes = []; // the stack of actively-pressed keys
 var color = 0;
-var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, wahwah, preamp, delay, feedback; 
+var synth = new Synth(16);
+var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, wahwah, preamp, delay, feedback;
 
 var initialize = () => {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -59,7 +60,7 @@ var initialize = () => {
   biquadFilter.connect(chorus.input);
   chorus.connect(delay);
   chorus.connect(gainNode); // dry sound without delay
-  
+
   delay.connect(feedback); // feedback loop
   feedback.connect(delay);
 
@@ -94,12 +95,14 @@ var translateMessage = data => {
   switch (data[0] & 0xf0) {
     case 0x90:
       if (data[2] != 0) {  // if velocity != 0, this is a note-on message
-        noteOn(data[1]);
+        synth.noteOn(data[1]);
+        //noteOn(data[1]);
         return;
       }
       // if velocity == 0, fall thru: it's a note-off.  MIDI's weird, y'all.
       case 0x80:
-        noteOff(data[1]);
+        synth.noteOff(data[1]);
+        //noteOff(data[1]);
         return;
       case 0xB0:
         filter(data[1], data[2]);
@@ -160,7 +163,7 @@ var filter = (potikka, value) => {
   drawFilter(potikka, value / 127.0);
 	if (potikka === 1) {
     var prevolume = value / 127.0;
-    if (activeNotes.length > 0) { 
+    if (activeNotes.length > 0) {
     	preamp.gain.cancelScheduledValues(0);
       preamp.gain.setTargetAtTime(prevolume, 0, portamento);
       }

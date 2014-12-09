@@ -61,8 +61,20 @@ class OscillatorPool {
 
     for (var i = 0; i < this.osc.length; i++) {
       if ((this.oscBusy[i]) && (this.oscNote[i] === note)) {
-        this.osc[i].noteOff();
+        // if other notes are busy change the osc to play lastly pressed note
+        if (this.oscBusy.filter(function (x) { return x === true; }).length >= 2) {
+          this.osc[i].changeNote(this.pressedNotes[this.pressedNotes.length-1]);
+        } else {
+          this.osc[i].noteOff();
+        }
         this.oscBusy[i] = false;
+
+        // check if need note off for everything
+        if (this.oscBusy.every(function (x) { return x === false;})) {
+          for (var j = 0; j < this.osc.length; j++) {
+            this.osc[j].noteOff();
+          }
+        }
       }
     }
   }
