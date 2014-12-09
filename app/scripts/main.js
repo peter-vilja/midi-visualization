@@ -1,80 +1,12 @@
-var attack = 0.05; // attack speed
-var release = 0.05; // release speed
-var portamento = 0.05; // portamento/glide speed
-var activeNotes = []; // the stack of actively-pressed keys
 var color = 0;
-var synth = new Synth(16);
-var oscillator, oscillator2, oscillator3, gainNode, context, biquadFilter, distortion, tuna, chorus, interval, currentNote, modulator, volume, wahwah, preamp, delay, feedback;
+var synth;
+var intervals = [];
 
 var initialize = () => {
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
+  synth = new Synth(16);
   drawInit(window.innerWidth, window.innerHeight);
-
-
-  context = new AudioContext();
-  tuna = new Tuna(context);
   navigator && navigator.requestMIDIAccess && navigator.requestMIDIAccess().then(success, failure);
-
-// set up the basic oscillator chain, muted to begin with.
-  oscillator = context.createOscillator();
-  oscillator2 = context.createOscillator();
-	oscillator3 = context.createOscillator();
-	oscillator.frequency.setValueAtTime(110, 0);
-	oscillator2.frequency.setValueAtTime(55, 0);
-	preamp = context.createGain();
-	preamp.gain.value = 1.0;
-	delay = context.createDelay();
-	feedback = context.createGain();
-	delay.delayTime.value = 0.0;
-	feedback.gain.value = 0.0;
-	modulator = 0;
-	volume = 0.0;
-	oscillator3.frequency.setValueAtTime(modulator, 0);
-	gainNode = context.createGain();
-	biquadFilter = context.createBiquadFilter();
-	distortion = context.createWaveShaper();
-	chorus = new tuna.Chorus({
-	             rate: 0.01,         //0.01 to 8+
-	             feedback: 0.0,     //0 to 1+
-	             delay: 0.0045,      //0 to 1
-	             bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
-	         });
-
-	wahwah = new tuna.WahWah({
-                 automode: true,                //true/false
-                 baseFrequency: 0.5,            //0 to 1
-                 excursionOctaves: 2,           //1 to 6
-                 sweep: 0.8,                    //0 to 1
-                 resonance: 10,                 //1 to 100
-                 sensitivity: 0.5,              //-1 to 1
-                 bypass: 1
-             });
-
-  oscillator.connect(preamp);
-  oscillator2.connect(preamp);
-  oscillator3.connect(preamp);
-  preamp.connect(distortion);
-  // wahwah.connect(distortion); // wah wah is not in use currently
-  distortion.connect(biquadFilter);
-  biquadFilter.connect(chorus.input);
-  chorus.connect(delay);
-  chorus.connect(gainNode); // dry sound without delay
-
-  delay.connect(feedback); // feedback loop
-  feedback.connect(delay);
-
-  delay.connect(gainNode);
-  gainNode.connect(context.destination);
-
-  distortion.curve = makeDistortionCurve(400);
-  biquadFilter.type = biquadFilter.LOWPASS;
-  biquadFilter.frequency.value = 500;
-  gainNode.gain.value = 0.0;  // Mute the sound
-  oscillator.type = oscillator.SINE;
-  oscillator.start(0);  // Go ahead and start up the oscillator
-  oscillator2.start(0);  // Go ahead and start up the oscillator
-  oscillator3.start(0);
 
 };
 
@@ -95,19 +27,40 @@ var translateMessage = data => {
   switch (data[0] & 0xf0) {
     case 0x90:
       if (data[2] != 0) {  // if velocity != 0, this is a note-on message
-        synth.noteOn(data[1]);
-        //noteOn(data[1]);
+        let note = data[1];
+
+        synth.noteOn(note);
+        drawCircle(note);
+        color++;
+
+        let interval = setInterval(() => {
+          drawCircle(note);
+        }, 100);
+
+        intervals.push({note: note, interval: interval});
+
         return;
       }
-      // if velocity == 0, fall thru: it's a note-off.  MIDI's weird, y'all.
-      case 0x80:
-        synth.noteOff(data[1]);
-        //noteOff(data[1]);
-        return;
-      case 0xB0:
-        filter(data[1], data[2]);
-        return;
-    }
+    case 0x80:
+      let note = data[1];
+
+      synth.noteOff(note);
+
+      let interval = intervals.filter(x => x.note === note)[0].interval
+      clearInterval(interval);
+      intervals = intervals.filter(x => x.note !== note)
+
+      return;
+    case 0xB0:
+      let potikka = data[1];
+      let value = data[2];
+
+      filter(potikka, value);
+
+      drawFilter(potikka, value / 127.0);
+
+      return;
+  }
 };
 
 var onMessage = message => {
@@ -117,100 +70,5 @@ var onMessage = message => {
 
 var drawCircle = (noteNumber) => draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), window.innerHeight / 2, window.innerWidth, window.innerHeight, 10, color);
 
-var noteOn = noteNumber => {
-  console.log('note', noteNumber);
-  activeNotes.push(noteNumber);
-  oscillator.frequency.cancelScheduledValues(0);
-  oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length-1]), 0, portamento);
-  oscillator2.frequency.cancelScheduledValues(0);
-  oscillator2.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber)/2, 0, portamento);
-  oscillator3.frequency.cancelScheduledValues(0); // not sure if needed
-  oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
-  gainNode.gain.cancelScheduledValues(0);
-  gainNode.gain.setTargetAtTime(1.0, 0, attack);
-  color++;
-
-  if (interval) clearInterval(interval);
-  drawCircle(noteNumber);
-  currentNote = noteNumber;
-  interval = setInterval(() => {
-    drawCircle(noteNumber);
-  }, 100);
-
-};
-
-var noteOff = noteNumber => {
-  if (noteNumber === currentNote) clearInterval(interval), interval = null;
-  let position = activeNotes.indexOf(noteNumber);
-  if (position != -1) {
-    activeNotes.splice(position, 1);
-  }
-  if (activeNotes.length == 0) {  // shut off the gainNode
-    gainNode.gain.cancelScheduledValues(0);
-    gainNode.gain.setTargetAtTime(0.0, 0, release);
-  } else {
-    oscillator.frequency.cancelScheduledValues(0);
-    oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length-1]), 0, portamento);
-    oscillator2.frequency.cancelScheduledValues(0);
-    oscillator2.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length-1])/2, 0, portamento);
-    oscillator3.frequency.cancelScheduledValues(0);
-    oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
-  }
-};
-
-var filter = (potikka, value) => {
-  console.log('potikka', potikka, 'value', value);
-  drawFilter(potikka, value / 127.0);
-	if (potikka === 1) {
-    var prevolume = value / 127.0;
-    if (activeNotes.length > 0) {
-    	preamp.gain.cancelScheduledValues(0);
-      preamp.gain.setTargetAtTime(prevolume, 0, portamento);
-      }
-  } else if (potikka === 2) {
-    chorus.rate = value / 16 + 0.01;
-  } else if (potikka === 3) {
-    if (value === 0) {
-    	wahwah.bypass = 1;
-    } else {
-    	wahwah.bypass = 0;
-    }
-  } else if (potikka === 4) {
-    var curve = makeDistortionCurve(value * 3 + 50);
-    distortion.curve = curve;
-  } else if (potikka === 5) {
-    var delaytime = value / 64;
-    delay.delayTime.cancelScheduledValues(0);
-    delay.delayTime.setTargetAtTime(delaytime, 0, portamento);
-  } else if (potikka === 6) {
-    var feedbackAmount = value / 130;
-    feedback.gain.cancelScheduledValues(0);
-    feedback.gain.setTargetAtTime(feedbackAmount, 0, portamento);
-  } else if (potikka === 7) {
-    modulator = value // changing the carrier frequency
-    oscillator3.frequency.cancelScheduledValues(0);
-    oscillator3.frequency.setTargetAtTime(modulator, 0, portamento);
-  } else {
-    biquadFilter.frequency.value = value * 100 + 100;
-  }
-
-};
-
-var makeDistortionCurve = amount => {
-  var k = typeof amount === 'number' ? amount : 50;
-  var n_samples = 44100;
-  var curve = new Float32Array(n_samples);
-  var deg = Math.PI / 180;
-  var i = 0;
-  var x;
-
-  for ( ; i < n_samples; ++i ) {
-    x = i * 2 / n_samples - 1;
-    curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
-  }
-  return curve;
-};
-
-var frequencyFromNoteNumber = note => 440 * Math.pow(2,(note-69)/12);
 
 initialize();

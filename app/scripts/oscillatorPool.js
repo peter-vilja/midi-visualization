@@ -43,7 +43,7 @@ class OscillatorPool {
       }
     }
   }
-
+  // TODO Might need some refactoring :)
   noteOff(note) {
     var index = this.pressedNotes.indexOf(note);
     this.pressedNotes.splice(index, 1);
@@ -62,15 +62,15 @@ class OscillatorPool {
     for (var i = 0; i < this.osc.length; i++) {
       if ((this.oscBusy[i]) && (this.oscNote[i] === note)) {
         // if other notes are busy change the osc to play lastly pressed note
-        if (this.oscBusy.filter(function (x) { return x === true; }).length >= 2) {
-          this.osc[i].changeNote(this.pressedNotes[this.pressedNotes.length-1]);
+        if (this.oscBusy.filter(x => x === true).length >= 2) {
+          this.osc[i].changeNote(this.pressedNotes[0]);
         } else {
           this.osc[i].noteOff();
         }
         this.oscBusy[i] = false;
 
         // check if need note off for everything
-        if (this.oscBusy.every(function (x) { return x === false;})) {
+        if (this.oscBusy.every(x => x === false)) {
           for (var j = 0; j < this.osc.length; j++) {
             this.osc[j].noteOff();
           }
