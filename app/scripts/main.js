@@ -46,8 +46,10 @@ var translateMessage = data => {
 
       synth.noteOff(note);
 
-      let interval = intervals.filter(x => x.note === note)[0].interval
-      clearInterval(interval);
+      let obj = intervals.filter(x => x.note === note)[0];
+      if (obj) {
+        clearInterval(obj.interval);
+      }
       intervals = intervals.filter(x => x.note !== note)
 
       return;
