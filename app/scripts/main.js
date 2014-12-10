@@ -55,7 +55,7 @@ var translateMessage = data => {
       let potikka = data[1];
       let value = data[2];
 
-      filter(potikka, value);
+      synth.filter(potikka, value);
 
       drawFilter(potikka, value / 127.0);
 
