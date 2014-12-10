@@ -70,7 +70,7 @@ var onMessage = message => {
   translateMessage(message.data);
 };
 
-var drawCircle = (noteNumber) => draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), window.innerHeight / 2, window.innerWidth, window.innerHeight, 10, color);
+var drawCircle = (noteNumber) => draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), window.innerHeight / 2, window.innerWidth, window.innerHeight, 8, color);
 
 
 initialize();

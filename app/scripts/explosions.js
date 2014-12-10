@@ -77,7 +77,8 @@ function drawInit(width, height) {
 
 function draw(mx, my, w, h, timeScale, color) {
 	// doVisual('miniworks', 120, 120, 1));
-	h = h-400;
+console.log(' asdf ' + h/2);
+	h = h-h/2;
 	var transforms = ["0, "+h,"0, "+(-h)];
 	for (var i = 0; i < transforms.length; i++) {
 		svg.append("svg:ellipse")
