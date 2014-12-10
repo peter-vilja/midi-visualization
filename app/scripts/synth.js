@@ -37,7 +37,7 @@ class Synth {
 
 
 
-    this.masterVolume.connect(this.distortion);
+    /*/this.masterVolume.connect(this.distortion);
     //this.wahwah.connect(distortion); // wah wah is not in use currently
     this.distortion.connect(this.biquadFilter);
     this.biquadFilter.connect(this.chorus.input);
@@ -48,10 +48,20 @@ class Synth {
     this.delay.connect(output);
     this.oscs.connect(this.masterVolume);
     this.modulo.connect(this.masterVolume);
+    output.connect(this.ctx.destination);*/
+
+    this.masterVolume.connect(this.chorus.input);
+    this.chorus.connect(this.delay);
+    this.delay.connect(this.feedback); // feedback loop
+    this.feedback.connect(this.delay);
+    this.delay.connect(this.biquadFilter);
+    this.biquadFilter.connect(output);
+
+    this.oscs.connect(this.masterVolume);
     output.connect(this.ctx.destination);
 
-
-    output.gain.value = 1.0;
+    this.masterVolume.gain.value = 0.5;
+    output.gain.value = 0.5;
     this.feedback.gain.value = 0.0;
     this.delay.delayTime.value = 0.0;
     this.distortion.curve = makeDistortionCurve(400);
@@ -64,14 +74,14 @@ class Synth {
 
   noteOn(note) {
     this.oscs.noteOn(note);
-    this.modulo.frequency.cancelScheduledValues(0);
-    this.modulo.frequency.setTargetAtTime(this.modulator, 0, this.portamento);
+    //this.modulo.frequency.cancelScheduledValues(0);
+    //this.modulo.frequency.setTargetAtTime(this.modulator, 0, this.portamento);
   }
 
   noteOff(note) {
     this.oscs.noteOff(note);
-    this.modulo.frequency.cancelScheduledValues(0);
-    this.modulo.frequency.setTargetAtTime(this.modulator, 0, this.portamento);
+    //this.modulo.frequency.cancelScheduledValues(0);
+    //this.modulo.frequency.setTargetAtTime(this.modulator, 0, this.portamento);
   }
 
   filter(potikka, value) {
@@ -99,9 +109,9 @@ class Synth {
       this.feedback.gain.cancelScheduledValues(0);
       this.feedback.gain.setTargetAtTime(feedbackAmount, 0, this.portamento);
     } else if (potikka === 7) {
-      this.modulator = value; // changing the carrier frequency
-      this.modulo.frequency.cancelScheduledValues(0);
-      this.modulo.frequency.setTargetAtTime(modulator, 0, this.portamento);
+      //this.modulator = value; // changing the carrier frequency
+      //this.modulo.frequency.cancelScheduledValues(0);
+      //this.modulo.frequency.setTargetAtTime(modulator, 0, this.portamento);
     } else {
       this.biquadFilter.frequency.value = value * 100 + 100;
     }
