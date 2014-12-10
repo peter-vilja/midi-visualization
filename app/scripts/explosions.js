@@ -75,9 +75,10 @@ function drawInit(width, height) {
 }
 
 
-function draw(mx, my, h, w, timeScale, color) {
+function draw(mx, my, w, h, timeScale, color) {
 	// doVisual('miniworks', 120, 120, 1));
-	var transforms = ["0,300","0,-300"];
+	h = h-400;
+	var transforms = ["0, "+h,"0, "+(-h)];
 	for (var i = 0; i < transforms.length; i++) {
 		svg.append("svg:ellipse")
 			.attr("cx",mx)
@@ -119,7 +120,7 @@ function draw(mx, my, h, w, timeScale, color) {
 
 function drawFilter(block, scale) {
 
-	
+
 	// console.log(d3.select('#block1'));
 	d3.select('#block'+ block)
 		.transition()

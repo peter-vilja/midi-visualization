@@ -1,4 +1,4 @@
-var socket = io('http://10.23.7.25:3000');
+var socket = io('http://10.100.60.147:3000');
 var connect = document.getElementById('connect');
 var clients = {};
 
@@ -59,7 +59,6 @@ socket.on('createOffer', ({to}) => {
 
 var showMessage = from => {
   return event => {
-    console.log(event.data);
     translateMessage(JSON.parse(event.data));
   };
 };
