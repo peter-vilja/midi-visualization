@@ -79,9 +79,9 @@ class OscillatorPool {
     }
   }
 
-  setParam(param, val) {
+  setType(type) {
     for (var i = 0; i < this.osc.length; i++) {
-      this.osc[i].setParam(param, val);
+      this.osc[i].setType(type);
     }
   }
 }

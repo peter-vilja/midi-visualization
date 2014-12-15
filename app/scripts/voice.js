@@ -39,4 +39,9 @@ class Voice {
     this.osc2.frequency.setTargetAtTime(0, this.ctx.currentTime, this.portamento);
     //this.osc.stop(0);
   }
+
+  setType(type) {
+    this.osc.type = type;
+    this.osc2.type = type;
+  }
 }
