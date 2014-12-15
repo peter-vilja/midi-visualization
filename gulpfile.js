@@ -55,7 +55,7 @@ gulp.task('connect', function () {
     });
 });
 
-gulp.task('watch', ['connect', 'copy', 'styles', 'html'], function () {
+gulp.task('watch', ['connect', 'copy', 'styles', 'html', 'scripts'], function () {
   var server = livereload();
   server.changed();
 
