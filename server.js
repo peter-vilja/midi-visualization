@@ -14,6 +14,11 @@ var add = R.curry(function (id, client) {
   return client;
 });
 
+var remove = R.curry(function (id, client) {
+  client.inactive = client.inactive.filter(function (peer) { return peer != id; });
+  return client;
+});
+
 io.on('connection', function (socket) {
   console.log('a user connected');
   var id = socket.id;
@@ -52,6 +57,11 @@ io.on('connection', function (socket) {
 
   socket.on('iceCandidate', function (candidate) {
     io.to(candidate.to).emit('iceCandidate', {from: socket.id, candidate: candidate.candidate});
+  });
+
+  socket.on('disconnect', function () {
+    delete calls[socket.id];
+    calls = R.mapObj(remove(socket.id), calls);
   });
 });
 

@@ -1,4 +1,4 @@
-var socket = io('http://10.100.60.147:3000');
+var socket = io('http://192.168.1.17:3000');
 var connect = document.getElementById('connect');
 var clients = {};
 
