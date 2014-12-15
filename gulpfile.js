@@ -18,8 +18,7 @@ gulp.task('scripts', function () {
 gulp.task('copy', function () {
   return gulp.src([
       'node_modules/traceur/bin/traceur-runtime.js',
-      'node_modules/es6-module-loader/dist/es6-module-loader.js',
-      // 'node_modules/d3/d3.js'
+      'node_modules/es6-module-loader/dist/es6-module-loader.js'
     ])
     .pipe(gulp.dest('.tmp/scripts/vendor'))
     .pipe(gulp.dest('dist/scripts/vendor'));

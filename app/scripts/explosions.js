@@ -1,14 +1,10 @@
 var svg = d3.select("#svgContainer").append("svg:svg").style("pointer-events", "all");
 var colors = d3.scale.category20b();
-// var color = 0;
 
 function drawInit(width, height) {
 	var elementWidth = width / 5;
 	var gap = (width / 5) / 5;
 	var elementHeight = height / 2 - 50;
-	// console.log('width: ' + width);
-	// console.log('elementWidth: ' + elementWidth);
-	// console.log('gap: ' + gap);
 
 	svg.append("svg:rect")
 		.attr("id", 'block1')
@@ -76,8 +72,6 @@ function drawInit(width, height) {
 
 
 function draw(mx, my, w, h, timeScale, color) {
-	// doVisual('miniworks', 120, 120, 1));
-console.log(' asdf ' + h/2);
 	h = h-h/2;
 	var transforms = ["0, "+h,"0, "+(-h)];
 	for (var i = 0; i < transforms.length; i++) {
@@ -86,7 +80,6 @@ console.log(' asdf ' + h/2);
 			.attr("cy",my)
 			.attr("rx",15)
 			.attr("ry",30)
-			// .attr("r",10)
 			.style("stroke",colors(color))
 			.style("fill",colors(color))
 			.style("stroke-opacity",0.5)
@@ -98,31 +91,11 @@ console.log(' asdf ' + h/2);
 				.style("stroke-opacity",1e-15)
 				.style("fill-opacity",1e-6)
 				.remove();
-
-
-		// ORIGINAL GRAPHICS
-		// svg.append("svg:circle")
-		// 	.attr("cx",mx)
-		// 	.attr("cy",my)
-		// 	.attr("r",10)
-		// 	.style("stroke",colors(++color))
-		// 	.style("fill",colors(color))
-		// 	.style("stroke-opacity",0.5)
-		// 	.transition()
-		// 		.attr("transform","translate("+transforms[i]+")")
-		// 		.duration(timeScale*1000)
-		// 		.ease(Math.sqrt)
-		// 		.attr("r",25)
-		// 		.style("stroke-opacity",1e-6)
-		// 		.style("fill-opacity",1e-6)
-		// 		.remove();
 	}
 }
 
 function drawFilter(block, scale) {
 
-
-	// console.log(d3.select('#block1'));
 	d3.select('#block'+ block)
 		.transition()
 			.ease(Math.sqrt)
@@ -130,69 +103,4 @@ function drawFilter(block, scale) {
 			.style("fill", colors(20 / 10 * block))
 			.style("stroke-opacity",scale)
 			.style("opacity",scale);
-
-
-				// .attr("r",25)
-				// .style("stroke-opacity",1e-6)
-				// .style("fill-opacity",1e-6);
-				// .remove();
-
-			// .attr("r",10)
-		// document.getElementById('block2')
-		// 	.style("stroke",colors(color))
-		// 	.style("fill",colors(color))
-		// 	.style("stroke-opacity",0.1)
-		// 	.style("opacity",0.1)
-		// 	.transition()
-		// 		// .attr("transform","translate("+transforms[i]+")")
-		// 		.duration(timeScale*500)
-		// 		.ease(Math.sqrt)
-		// 		.attr("r",25)
-		// 		.style("stroke-opacity",1e-15)
-		// 		.style("fill-opacity",1e-6)
-		// 		.remove();
-
-		// 	// .attr("r",10)
-		// document.getElementById('block3')
-		// 	.style("stroke",colors(color))
-		// 	.style("fill",colors(color))
-		// 	.style("stroke-opacity",0.1)
-		// 	.style("opacity",0.1)
-		// 	.transition()
-		// 		// .attr("transform","translate("+transforms[i]+")")
-		// 		.duration(timeScale*500)
-		// 		.ease(Math.sqrt)
-		// 		.attr("r",25)
-		// 		.style("stroke-opacity",1e-15)
-		// 		.style("fill-opacity",1e-6)
-		// 		.remove();
-
-		// 	// .attr("r",10)
-		// document.getElementById('block4')
-		// 	.style("stroke",colors(color))
-		// 	.style("fill",colors(color))
-		// 	.style("stroke-opacity",0.1)
-		// 	.style("opacity",0.1)
-		// 	.transition()
-		// 		// .attr("transform","translate("+transforms[i]+")")
-		// 		.duration(timeScale*500)
-		// 		.ease(Math.sqrt)
-		// 		.attr("r",25)
-		// 		.style("stroke-opacity",1e-15)
-		// 		.style("fill-opacity",1e-6)
-		// 		.remove();
-
-		// document.getElementById('block5')
-		// 	.style("stroke",colors(color))
-		// 	.style("fill",colors(color))
-		// 	.style("stroke-opacity",0.1)
-		// 	.style("opacity",0.1)
-		// 	.transition()
-		// 		// .attr("transform","translate("+transforms[i]+")")
-		// 		.duration(timeScale*500)
-		// 		.ease(Math.sqrt)
-		// 		.attr("r",25)
-		// 		.style("stroke-opacity",1e-15)
-		// 		.style("fill-opacity",1e-6)
-		// 		.remove();
 }

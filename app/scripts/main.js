@@ -72,5 +72,4 @@ var onMessage = message => {
 
 var drawCircle = (noteNumber) => draw(noteNumber * window.innerWidth/64 - (window.innerWidth/2), window.innerHeight / 2, window.innerWidth, window.innerHeight, 8, color);
 
-
 initialize();
